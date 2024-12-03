@@ -1,0 +1,790 @@
+﻿
+@{
+    ViewBag.Title = "Trang chủ";
+    var listSPBanChay = ViewBag.SanPhamBanChay as List<WebBanTra.Models.SanPham>;
+    var listAnhSPBanChay = ViewBag.AnhSanPhamBanChay as List<WebBanTra.Models.Anh_SanPham>;
+    var listMoTaSPBanChay = ViewBag.MoTaSanPhamBanChay as List<WebBanTra.Models.MoTa_SanPham>;
+    var styleDM = "";
+}
+
+<main class="main">
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero section">
+
+        <div id="hero-carousel" data-bs-interval="5000" class="carousel carousel-fade" data-bs-ride="carousel" style="width:100%;">
+
+            <!-- Slide 1 -->
+            <div class="carousel-item active" style="background-image: url(/Images/sidebar-1_renew.png); background-repeat: no-repeat; background-size: cover; ">
+                <div class="carousel-container">
+                    <h2 class="animate__animated animate__fadeInDown"><span style="color: white;">SERENITEA</span></h2>
+                    <a href="@Url.Action("SearchDM", "Product", new {nameDM = 4})" class="btn-get-started animate__animated animate__fadeInUp scrollto" style="color:white; border-color: white;">Mua Ngay</a>
+                </div>
+
+            </div>
+
+            <!-- Slide 2 -->
+            <div class="carousel-item" style="background-image: url(/Images/sidebar-2.png); background-repeat: no-repeat; background-size: cover;">
+                <div class="carousel-container">
+                    <a href="@Url.Action("SearchDM", "Product", new {nameDM = 2})" class="btn-get-started animate__animated animate__fadeInUp scrollto" style="border-color: black;">Mua Ngay</a>
+                </div>
+            </div>
+
+            <!-- Slide 3 -->
+            <div class="carousel-item" style="background-image: url(/Images/sidebar-3.png); background-repeat: no-repeat; background-size: cover;">
+                <div class="carousel-container">
+                    <a href="@Url.Action("SearchDM", "Product", new {nameDM = 3})" class="btn-get-started animate__animated animate__fadeInUp scrollto" style="color:white; border-color: white;">Mua Ngay</a>
+                </div>
+            </div>
+
+            <a class="carousel-control-prev" href="#hero-carousel" role="button" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon bi bi-chevron-left" aria-hidden="true"></span>
+            </a>
+
+            <a class="carousel-control-next" href="#hero-carousel" role="button" data-bs-slide="next">
+                <span class="carousel-control-next-icon bi bi-chevron-right" aria-hidden="true"></span>
+            </a>
+
+        </div>
+
+        <svg class="hero-waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28 " preserveAspectRatio="none">
+            <defs>
+                <path id="wave-path" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"></path>
+            </defs>
+            <g class="wave1">
+                <use xlink:href="#wave-path" x="50" y="3"></use>
+            </g>
+            <g class="wave2">
+                <use xlink:href="#wave-path" x="50" y="0"></use>
+            </g>
+            <g class="wave3">
+                <use xlink:href="#wave-path" x="50" y="9"></use>
+            </g>
+        </svg>
+
+    </section><!-- /Hero Section -->
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="portfolio section">
+
+        <!-- Section Title -->
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Sản Phẩm</h2>
+            <p>Bán Chạy</p>
+        </div><!-- End Section Title -->
+
+        <div class="container" id="DanhMuc">
+
+            <div class="isotope-layout" data-default-filter="*" data-layout="masonry" data-sort="original-order">
+
+                <ul class="portfolio-filters isotope-filters" data-aos="fade-up" data-aos-delay="100">
+                    <li data-filter="*" class="filter-active">All</li>
+                    <li data-filter=".filter-app">Trà</li>
+                    <li data-filter=".filter-product">Bộ Ấm trà</li>
+                    <li data-filter=".filter-branding">Bộ trà</li>
+                </ul><!-- End Portfolio Filters -->
+                @*filter-app : trà
+                    filter-product : bộ ấm trà
+                    filter-brand: bộ trà
+                *@
+
+
+                <div class="row gy-4 isotope-container" data-aos="fade-up" data-aos-delay="200">
+                    @if (listSPBanChay != null && listAnhSPBanChay != null && listMoTaSPBanChay != null)
+                    {
+                        foreach (WebBanTra.Models.SanPham item in listSPBanChay)
+                        {
+                            if (item != null)
+                            {
+                                switch (item.MaDM)
+                                {
+                                    case 1:
+                                        {
+                                            styleDM = "app";
+                                            break;
+                                        }
+
+
+                                    case 2:
+                                        {
+                                            styleDM = "product";
+                                            break;
+                                        }
+
+
+                                    default:
+                                        {
+                                            styleDM = "branding";
+                                            break;
+                                        }
+
+                                }
+                                <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-@styleDM">
+                                    <a href="@Url.Action("ChiTietSanPham", "Product", new {id = item.MaSP})"><img src="@listAnhSPBanChay.Find(r=>r.MaSP == item.MaSP).LinhAnh" class="img-fluid" alt="ảnh sản phẩm @item.TenSP"></a>
+                                    <div class="portfolio-info">
+                                        <h4>@item.TenSP</h4>
+                                        <p>@listMoTaSPBanChay.Find(r => r.MaSP == item.MaSP).MoTa</p>
+                                        <br />
+                                        <a href="@Url.Action("ChiTietSanPham", "Product", new {id = item.MaSP})" class="btn-get-started animate__animated animate__fadeInUp scrollto" style="padding-right: 90px;">Mua Ngay</a>
+                                        <a onclick="showNotification()" href="@Url.Action("AddProduct", "Cart", new {maSP = item.MaSP})" class="btn-get-started animate__animated animate__fadeInUp scrollto" style="padding-left: 70px; border-left: 2px solid black;">Thêm vào giỏ hàng</a>
+                                        <a href="@listAnhSPBanChay.Find(r=>r.MaSP == item.MaSP).LinhAnh" title="@item.TenSP" data-gallery="portfolio-gallery-@styleDM" class="glightbox preview-link"><i class="bi bi-zoom-in"></i></a>
+                                        <a href="@Url.Action("ChiTietSanPham", "Product", new {id = item.MaSP})" title="More Details" class="details-link"><i class="bi bi-link-45deg"></i></a>
+                                    </div>
+                                </div><!-- End Portfolio Item -->
+                            }
+                        }
+                    }
+
+
+                </div><!-- End Portfolio Container -->
+
+            </div>
+
+        </div>
+
+    </section><!-- /Portfolio Section -->
+    <!-- Features Section -->
+    <section id="features" class="features section">
+
+        <div class="container">
+
+            <ul class="nav nav-tabs row  d-flex" data-aos="fade-up" data-aos-delay="100">
+                <li class="nav-item col-3">
+                    <a class="nav-link active show" data-bs-toggle="tab" data-bs-target="#features-tab-1">
+                        <i class="bi bi-binoculars"></i>
+                        <h4 class="d-none d-lg-block">Sản phẩm liên quan đến trà</h4>
+                    </a>
+                </li>
+                <li class="nav-item col-3">
+                    <a class="nav-link" data-bs-toggle="tab" data-bs-target="#features-tab-2">
+                        <i class="bi bi-box-seam"></i>
+                        <h4 class="d-none d-lg-block">Quà tặng khách hàng</h4>
+                    </a>
+                </li>
+                <li class="nav-item col-3">
+                    <a class="nav-link" data-bs-toggle="tab" data-bs-target="#features-tab-3">
+                        <i class="bi bi-brightness-high"></i>
+                        <h4 class="d-none d-lg-block">Các sản phẩm khác</h4>
+                    </a>
+                </li>
+                <li class="nav-item col-3">
+                    <a class="nav-link" data-bs-toggle="tab" data-bs-target="#features-tab-4">
+                        <i class="bi bi-command"></i>
+                        <h4 class="d-none d-lg-block">Bộ sản phẩm 2025</h4>
+                    </a>
+                </li>
+            </ul><!-- End Tab Nav -->
+
+            <div class="tab-content" data-aos="fade-up" data-aos-delay="200">
+
+                <div class="tab-pane fade active show" id="features-tab-1">
+                    <div class="row">
+                        <div class="col-lg-6 order-2 order-lg-1 mt-3 mt-lg-0">
+                            <h3>Đa dạng loài trà</h3>
+                            <p class="fst-italic">
+                                Chúng tôi cung cấp nhiều loại trà khác nhau cũng như các sản phẩm liên qua đến tra như ấm trà và các bộ quà tặng dùng để tặng đối tác.
+                            </p>
+                            <ul>
+                                <li>
+                                    <i class="bi bi-check2-all"></i>
+                                    <spab>Trà nguyên chất, an toàn và chất lượng</spab>
+                                </li>
+                                <li><i class="bi bi-check2-all"></i> <span>Sơ chế và đống gói dưới quy trình gắt gao.</span>.</li>
+                                <li><i class="bi bi-check2-all"></i> <span>Kiểm tra và thu thập đánh giá, cải thiện sản phẩm trước khi bán ra thị trường.</span></li>
+                            </ul>
+                            <p>
+                                Trà từ chúng tôi được tuyển chọn kỹ lưỡng từ những lá trà tươi ngon nhất, mang hương vị đặc trưng và chất lượng cao. Với cam kết cung cấp sản phẩm tự nhiên, sạch và đảm bảo an toàn, trà được chế biến theo quy trình hiện đại nhưng vẫn giữ được hương thơm và vị nguyên bản. Đây là lựa chọn hoàn hảo cho những người yêu thích trà và muốn thưởng thức sự tinh túy từ thiên nhiên.
+                            </p>
+                        </div>
+                        <div class="col-lg-6 order-1 order-lg-2 text-center">
+                            <img src="~/Images/san_pham_kem_theo/anh6.jpg" alt="ảnh mô tả 1" class="img-fluid">
+                        </div>
+                    </div>
+                </div><!-- End Tab Content Item -->
+
+                <div class="tab-pane fade" id="features-tab-2">
+                    <div class="row">
+                        <div class="col-lg-6 order-2 order-lg-1 mt-3 mt-lg-0">
+                            <h3>Quà Tặng Đặc Biệt Cho Khách Hàng Yêu Trà</h3>
+                            <p>
+                                món quà tinh tế mang đậm hương vị trà. Bộ quà tặng gồm các loại trà thượng hạng được tuyển chọn kỹ lưỡng,
+                                kết hợp với phụ kiện pha trà sang trọng, giúp quý khách trải nghiệm trọn vẹn nghệ thuật thưởng trà. Đây không chỉ là món quà ý nghĩa mà còn là lời tri ân sâu sắc dành cho quý khách hàng đã tin tưởng và đồng hành cùng chúng tôi.
+                            </p>
+                            <p class="fst-italic">
+
+                            </p>
+                            <ul>
+                                <li><i class="bi bi-check2-all"></i> <span>Chuyên nghiệp</span></li>
+                                <li><i class="bi bi-check2-all"></i> <span>Tao nhãn.</span></li>
+                                <li><i class="bi bi-check2-all"></i> <span>Thanh cao.</span></li>
+                                <li><i class="bi bi-check2-all"></i> <span>Bắt mắt.</span></li>
+                            </ul>
+                        </div>
+                        <div class="col-lg-6 order-1 order-lg-2 text-center">
+                            <img src="~/Images/san_pham_kem_theo/hop-an-khang-go-2-scaled-500x500.jpeg" alt="" class="img-fluid">
+                        </div>
+                    </div>
+                </div><!-- End Tab Content Item -->
+
+                <div class="tab-pane fade" id="features-tab-3">
+                    <div class="row">
+                        <div class="col-lg-6 order-2 order-lg-1 mt-3 mt-lg-0">
+                            <h3>Khám phá sự tinh tế của thế giới trà</h3>
+                            <p>
+                                Không chỉ là trà ngon, sự xuất sắc và tinh tế còn thể hiện rõ ràng qua thiết kế đẹp mắt và sự công phu trong chế tác ấm chén được dùng pha trà.
+                            </p>
+                            <p class="fst-italic">
+
+                            </p>
+                        </div>
+                        <div class="col-lg-6 order-1 order-lg-2 text-center">
+                            <img src="~/Images/san_pham_kem_theo/bo-son-mai-7.jpg" alt="" class="img-fluid">
+                        </div>
+                    </div>
+                </div><!-- End Tab Content Item -->
+
+                <div class="tab-pane fade" id="features-tab-4">
+                    <div class="row">
+                        <div class="col-lg-6 order-2 order-lg-1 mt-3 mt-lg-0">
+                            <h3>Quà Tết 2025</h3>
+                            <p>
+                                Bộ quà này không chỉ là một sản phẩm, mà còn là sự tôn vinh vẻ đẹp của văn hóa trà Việt, khơi gợi những khoảnh khắc ấm áp, gắn kết trong dịp Tết.
+                            </p>
+
+
+                        </div>
+                        <div class="col-lg-6 order-1 order-lg-2 text-center">
+                            <img src="https://www.traviet.com/wp-content/uploads/2024/10/banner-qua-tet-2025-at-ti-2.jpg" alt="" class="img-fluid">
+                        </div>
+                    </div>
+                </div><!-- End Tab Content Item -->
+
+            </div>
+
+        </div>
+
+    </section><!-- /Features Section -->
+
+    <div class="container section-title" data-aos="fade-up">
+        <h2>Ưa thích</h2>
+        <p>Sản phẩm ưa thích</p>
+    </div><!-- End Section Title -->
+
+    <div class="container" id="BanChay">
+        <div class="row gy-2">
+            @if (listSPBanChay != null && listAnhSPBanChay != null && listMoTaSPBanChay != null)
+            {
+                foreach (WebBanTra.Models.SanPham item in listSPBanChay)
+                {
+                    if (item != null)
+                    {
+                        <div class="col-xl-3 col-lg-6 shadow-sm" data-aos="fade-up" data-aos-delay="200">
+                            <div class="pricing-item" style="height: 80%; width: 100%;">
+                                <a href="@Url.Action("ChiTietSanPham", "Product", new {id = item.MaSP})">
+                                    <img src="@listAnhSPBanChay.Find(r=>r.MaSP == item.MaSP).LinhAnh" class="img-fluid" alt="@item.TenSP">
+                                    <div class="btn-wrap">
+                                        <h3 id="dynamicTruncate" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; ">@item.TenSP</h3>
+                                    </div>
+                                    <br />
+                                </a>
+                            </div>
+                            <div style="height: 10%; width: 100%;">
+                                <h4 style="color:red;" id="current-@item.MaSP">@item.Gia</h4>
+                            </div>
+                            <div style="height: 10%; width: 100%;">
+                                <a onclick="showNotification()" style="padding-right: 50px;"href="@Url.Action("ChiTietSanPham", "Product", new {id = item.MaSP})" class="btn-buy">Mua Ngay</a>
+                                <a onclick="showNotification()" style="padding-left: 40px; border-left: 1px solid black;" href="@Url.Action("AddProduct", "Cart", new {maSP = item.MaSP})" class="btn-buy">Thêm vào giỏ hàng</a>
+                            </div>
+                        </div><!-- End Pricing Item -->
+                    }
+                }
+            }
+        </div>
+
+    </div>
+
+    </section><!-- /Pricing Section -->
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="testimonials section">
+
+        <!-- Section Title -->
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Thông tin</h2>
+            <p>Về chúng tôi</p>
+        </div><!-- End Section Title -->
+
+        <div class="container" data-aos="fade-up" data-aos-delay="100" id="GioiThieu">
+
+            <div class="swiper init-swiper">
+                <script type="application/json" class="swiper-config">
+                    {
+                      "loop": true,
+                      "speed": 600,
+                      "autoplay": {
+                        "delay": 5000
+                      },
+                      "slidesPerView": "auto",
+                      "pagination": {
+                                "el": ".swiper-pagination",
+                        "type": "bullets",
+                        "clickable": true
+                      },
+                      "breakpoints": {
+                                "320": {
+                                    "slidesPerView": 1,
+                          "spaceBetween": 40
+                                },
+                        "1200": {
+                                    "slidesPerView": 3,
+                          "spaceBetween": 10
+                        }
+                            }
+                    }
+                </script>
+                <div class="swiper-wrapper">
+
+                    <div class="swiper-slide">
+                        <div class="testimonial-item">
+                            <img src="~/Images/member/member-1.jpg" class="testimonial-img" alt="member 1" />
+                            <h3>Nguyễn Mạnh Quân</h3>
+                            <h4>2001223942 - Nhóm trưởng</h4>
+                            <div class="stars">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                            </div>
+                            <p>
+                                <i class="bi bi-quote quote-icon-left"></i>
+                                <span>Hãy mua theo cách của bạn</span>
+                                <i class="bi bi-quote quote-icon-right"></i>
+                            </p>
+                        </div>
+                    </div><!-- End testimonial item -->
+
+                    <div class="swiper-slide">
+                        <div class="testimonial-item">
+                            <img src="~/Images/member/member-10.jpg" class="testimonial-img" alt="member 2" />
+                            <h3>Văn Trọng Dương</h3>
+                            <h4>2001220817 - Nhóm trưởng</h4>
+                            <div class="stars">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                            </div>
+                            <p>
+                                <i class="bi bi-quote quote-icon-left"></i>
+                                <span>Uy tín - Chất lượng - Tin dùng</span>
+                                <i class="bi bi-quote quote-icon-right"></i>
+                            </p>
+                        </div>
+                    </div><!-- End testimonial item -->
+
+                    <div class="swiper-slide">
+                        <div class="testimonial-item">
+                            <img src="~/Images/member/member-7.jpg" class="testimonial-img" alt="member 3" />
+                            <h3>Nguyễn Hải Đăng</h3>
+                            <h4>2001220959 - thành viên</h4>
+                            <div class="stars">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                            </div>
+                            <p>
+                                <i class="bi bi-quote quote-icon-left"></i>
+                                <span>Nhã nhặng - Phong cách</span>
+                                <i class="bi bi-quote quote-icon-right"></i>
+                            </p>
+                        </div>
+                    </div><!-- End testimonial item -->
+
+                    <div class="swiper-slide">
+                        <div class="testimonial-item">
+                            <img src="~/Images/member/member-2.jpg" class="testimonial-img" alt="member 3">
+                            <h3>Nguyễn Minh Khang</h3>
+                            <h4>200122005 - thành viên</h4>
+                            <div class="stars">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                            </div>
+                            <p>
+                                <i class="bi bi-quote quote-icon-left"></i>
+                                <span>Tỉ mỉ - Khéo léo</span>
+                                <i class="bi bi-quote quote-icon-right"></i>
+                            </p>
+                        </div>
+                    </div><!-- End testimonial item -->
+
+                    <div class="swiper-slide">
+                        <div class="testimonial-item">
+                            <img src="~/Images/member/member-3.jpg" class="testimonial-img" alt="member 4">
+                            <h3>Lương Liêm Phong</h3>
+                            <h4>2001223664 - thành viên</h4>
+                            <div class="stars">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                            </div>
+                            <p>
+                                <i class="bi bi-quote quote-icon-left"></i>
+                                <span>Tin tưởng - Lâu dài</span>
+                                <i class="bi bi-quote quote-icon-right"></i>
+                            </p>
+                        </div>
+                    </div><!-- End testimonial item -->
+
+                    <div class="swiper-slide">
+                        <div class="testimonial-item">
+                            <img src="~/Images/member/member-4.jpg" class="testimonial-img" alt="member 4">
+                            <h3>Lê Minh Sang</h3>
+                            <h4>2001224155 - thành viên</h4>
+                            <div class="stars">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                            </div>
+                            <p>
+                                <i class="bi bi-quote quote-icon-left"></i>
+                                <span>Tin tưởng - Lâu dài</span>
+                                <i class="bi bi-quote quote-icon-right"></i>
+                            </p>
+                        </div>
+                    </div><!-- End testimonial item -->
+
+                    <div class="swiper-slide">
+                        <div class="testimonial-item">
+                            <img src="~/Images/member/member-7.jpg" class="testimonial-img" alt="member 5">
+                            <h3>Lê Huỳnh Tấn Phước</h3>
+                            <h4>2001223813 - thành viên</h4>
+                            <div class="stars">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                            </div>
+                            <p>
+                                <i class="bi bi-quote quote-icon-left"></i>
+                                <span>Tin tưởng - Lâu dài</span>
+                                <i class="bi bi-quote quote-icon-right"></i>
+                            </p>
+                        </div>
+                    </div><!-- End testimonial item -->
+
+                    <div class="swiper-slide">
+                        <div class="testimonial-item">
+                            <img src="~/Images/member/member-5.jpg" class="testimonial-img" alt="member 6">
+                            <h3>Nguyễn Bảo Trinh</h3>
+                            <h4>2001225583 - thành viên</h4>
+                            <div class="stars">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                            </div>
+                            <p>
+                                <i class="bi bi-quote quote-icon-left"></i>
+                                <span>Tin tưởng - Lâu dài</span>
+                                <i class="bi bi-quote quote-icon-right"></i>
+                            </p>
+                        </div>
+                    </div><!-- End testimonial item -->
+
+                    <div class="swiper-slide">
+                        <div class="testimonial-item">
+                            <img src="~/Images/member/member-6.jpg" class="testimonial-img" alt="">
+                            <h3>Lê Thị Yến Nhi</h3>
+                            <h4> - thành viên</h4>
+                            <div class="stars">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                            </div>
+                            <p>
+                                <i class="bi bi-quote quote-icon-left"></i>
+                                <span>Tin tưởng - Lâu dài</span>
+                                <i class="bi bi-quote quote-icon-right"></i>
+                            </p>
+                        </div>
+                    </div><!-- End testimonial item -->
+
+                    <div class="swiper-slide">
+                        <div class="testimonial-item">
+                            <img src="~/Images/member/member-9.jpg" class="testimonial-img" alt="">
+                            <h3>Nguyễn Tuyền</h3>
+                            <h4> - thành viên</h4>
+                            <div class="stars">
+                                <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                            </div>
+                            <p>
+                                <i class="bi bi-quote quote-icon-left"></i>
+                                <span>Tin tưởng - Lâu dài</span>
+                                <i class="bi bi-quote quote-icon-right"></i>
+                            </p>
+                        </div>
+                    </div><!-- End testimonial item -->
+
+                </div>
+                <div class="swiper-pagination"></div>
+            </div>
+
+        </div>
+
+    </section><!-- /Testimonials Section -->
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing section">
+
+        <!-- Section Title -->
+        <!-- Call To Action Section -->
+        <section id="call-to-action" class="call-to-action section">
+
+            <div class="container">
+
+                <div class="row" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="col-xl-9 text-center text-xl-start">
+                        <h3>Liên lạc để được tư vấn chi tiết</h3>
+                        <p>Chúng tôi sẽ hỗ trợ 24/7 tất cả các dịch vụ bên phía chúng tôi cung cấp cho quý khách</p>
+                    </div>
+                    <div class="col-xl-3 cta-btn-container text-center">
+                        <a class="cta-btn align-middle" href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Liên hệ chúng tôi</a>
+                    </div>
+                </div>
+
+            </div>
+
+        </section><!-- /Call To Action Section -->
+        <!-- Faq Section -->
+        <section id="faq" class="faq section">
+            <!-- Section Title -->
+            <div class="container section-title" data-aos="fade-up">
+                <h2>Bạn có thắc mắc?</h2>
+                <p>Giải đáp thắc mắc của bạn</p>
+            </div><!-- End Section Title -->
+
+            <div class="container" data-aos="fade-up">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="custom-accordion" id="accordion-faq">
+                            <div class="accordion-item">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-faq-1">
+                                        Cách để mua hàng
+                                    </button>
+                                </h2>
+
+                                <div id="collapse-faq-1" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion-faq">
+                                    <div class="accordion-body">
+                                        Hãy chọn hàng bạn muốn mua và ấn thêm vào giỏ hàng và thanh toán.
+                                        <br />  Hãy nhớ đăng nhập trước khi mua nhé!
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- .accordion-item -->
+
+                            <div class="accordion-item">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-faq-2" "=" ">
+                                        Bạn có thể thanh toán qua đâu
+                                    </button>
+                                </h2>
+                                <div id="collapse-faq-2" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion-faq">
+                                    <div class="accordion-body">
+                                        Chúng tôi nhận qua các kênh paypal, visa và ví điện tử MOMO.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- .accordion-item -->
+
+                            <div class="accordion-item">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-faq-3">
+                                        Cách để liên lạc với chúng tôi
+                                    </button>
+                                </h2>
+
+                                <div id="collapse-faq-3" class="collapse" aria-labelledby="headingThree" data-parent="#accordion-faq">
+                                    <div class="accordion-body">
+                                        Bạn đã bị lừa ở phía trên đúng không =)))
+                                        <br />Hãy lướt xuống dưới cùng điền đầy đủ thông tin, chúng tôi sẽ phản hồi sớm nhất.
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- .accordion-item -->
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section><!-- /Faq Section -->
+        <!-- Team Section -->
+        <section id="team" class="team section">
+
+            <!-- Section Title -->
+            <div class="container section-title" data-aos="fade-up">
+                <h2>Đội ngũ</h2>
+                <p>Nhóm trưởng</p>
+            </div><!-- End Section Title -->
+
+            <div class="container">
+
+                <div class="row gy-4">
+
+                    <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="100">
+                        <div class="team-member">
+                            <div class="member-img">
+                                <img src="~/assets/img/team/team-1.jpg" class="img-fluid" alt="">
+                                <div class="social">
+                                    <a href=""><i class="bi bi-twitter-x"></i></a>
+                                    <a href=""><i class="bi bi-facebook"></i></a>
+                                    <a href=""><i class="bi bi-instagram"></i></a>
+                                    <a href=""><i class="bi bi-linkedin"></i></a>
+                                </div>
+                            </div>
+                            <div class="member-info">
+                                <h4>SERENITEA</h4>
+                                <span>Thanh tĩnh - Thưởng thức trà</span>
+                            </div>
+                        </div>
+                    </div><!-- End Team Member -->
+
+                    <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="200">
+                        <div class="team-member">
+                            <div class="member-img">
+                                <img src="~/Images/member/member-1.jpg" class="img-fluid" alt="">
+                                <div class="social">
+                                    <a href=""><i class="bi bi-twitter-x"></i></a>
+                                    <a href=""><i class="bi bi-facebook"></i></a>
+                                    <a href=""><i class="bi bi-instagram"></i></a>
+                                    <a href=""><i class="bi bi-linkedin"></i></a>
+                                </div>
+                            </div>
+                            <div class="member-info">
+                                <h4>Nguyễn Mạnh Quân</h4>
+                                <span>Nhóm trưởng Lập trình web</span>
+                            </div>
+                        </div>
+                    </div><!-- End Team Member -->
+
+                    <div class="col-lg-3 col-md-6 d-flex align-items-stretch" data-aos="fade-up" data-aos-delay="300">
+                        <div class="team-member">
+                            <div class="member-img">
+                                <img src="~/Images/member/member-10.jpg" class="img-fluid" alt="">
+                                <div class="social">
+                                    <a href=""><i class="bi bi-twitter-x"></i></a>
+                                    <a href=""><i class="bi bi-facebook"></i></a>
+                                    <a href=""><i class="bi bi-instagram"></i></a>
+                                    <a href=""><i class="bi bi-linkedin"></i></a>
+                                </div>
+                            </div>
+                            <div class="member-info">
+                                <h4>Văn Trọng Dương</h4>
+                                <span>Nhóm trưởng Công nghệ phần mềm</span>
+                            </div>
+                        </div>
+                    </div><!-- End Team Member -->
+
+
+
+                </div>
+
+            </div>
+
+        </section><!-- /Team Section -->
+
+
+    </section>--><!-- /Recent Posts Section -->
+    <!-- Contact Section -->
+    <section id="contact" class="contact section">
+
+        <!-- Section Title -->
+        <div class="container section-title" data-aos="fade-up">
+            <h2>Liên hệ</h2>
+            <p>Liên hệ với chúng tôi</p>
+        </div><!-- End Section Title -->
+
+        <div class="container" data-aos="fade" data-aos-delay="100">
+
+            <div class="row gy-4">
+
+                <div class="col-lg-4">
+                    <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="200">
+                        <i class="bi bi-geo-alt flex-shrink-0"></i>
+                        <div>
+                            <h3>Địa chỉnh trụ sở chính</h3>
+                            <p>140 Đ. Lê Trọng Tấn, Tây Thạnh, Tân Phú, Hồ Chí Minh</p>
+                        </div>
+                    </div><!-- End Info Item -->
+
+                    <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="300">
+                        <i class="bi bi-telephone flex-shrink-0"></i>
+                        <div>
+                            <h3>Số điện thoại</h3>
+                            <p>028 6270 6275</p>
+                        </div>
+                    </div><!-- End Info Item -->
+
+                    <div class="info-item d-flex" data-aos="fade-up" data-aos-delay="400">
+                        <i class="bi bi-envelope flex-shrink-0"></i>
+                        <div>
+                            <h3>Email</h3>
+                            <p>huit@edu.com.vn</p>
+                        </div>
+                    </div><!-- End Info Item -->
+
+                </div>
+
+                <div class="col-lg-8">
+                    <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="200">
+                        <div class="row gy-4">
+
+                            <div class="col-md-6">
+                                <input type="text" name="name" class="form-control" placeholder="Your Name" required="">
+                            </div>
+
+                            <div class="col-md-6 ">
+                                <input type="email" class="form-control" name="email" placeholder="Your Email" required="">
+                            </div>
+
+                            <div class="col-md-12">
+                                <input type="text" class="form-control" name="subject" placeholder="Subject" required="">
+                            </div>
+
+                            <div class="col-md-12">
+                                <textarea class="form-control" name="message" rows="6" placeholder="Message" required=""></textarea>
+                            </div>
+
+                            <div class="col-md-12 text-center">
+                                <div class="loading">Đang tải</div>
+                                <div class="error-message"></div>
+                                <div class="sent-message">Cảm ơn thông tin của bạn!</div>
+
+                                <button type="submit">Gửi thông tin</button>
+                            </div>
+
+                        </div>
+                    </form>
+                </div><!-- End Contact Form -->
+
+            </div>
+            <script>
+                //document.addEventListener('DOMContentLoaded', function () {
+                //    // Chọn tất cả các thẻ <h4> có id chứa chuỗi "currently-"
+                //    var gias = document.querySelectorAll('[id*="currently-"]');
+
+                //    // Duyệt qua từng thẻ <h4> và cập nhật giá trị tiền tệ
+                //    gias.forEach(function (gia) {
+                //        // Lấy giá trị số từ nội dung của thẻ <h4>
+                //        var giaValue = parseFloat(gia.textContent.trim());
+
+                //        // Kiểm tra giá trị hợp lệ và cập nhật nếu cần
+                //        if (!isNaN(giaValue)) {
+                //            // Định dạng lại giá trị và gán lại vào thẻ <h4>
+                //            gia.textContent = giaValue.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
+                //        }
+                //    });
+                //});
+
+                document.addEventListener('DOMContentLoaded', function () {
+                    var h3Element = document.getElementById('dynamicTruncate');
+                    var text = h3Element.textContent;
+
+                    if (text.length > 30) {
+                        h3Element.textContent = text.substring(0, 30) + '...';
+                    }
+                });
+                function showNotification() {
+                    const notification = document.getElementById('notification');
+                    notification.classList.remove('hide'); // Xóa lớp ẩn nếu có
+                    notification.classList.add('show'); // Thêm lớp hiển thị
+
+                    // Sau 3 giây, ẩn thông báo
+                    setTimeout(() => {
+                        notification.classList.remove('show');
+                        notification.classList.add('hide');
+                    }, 3000);
+                }
+            </script>
+        </div>
+        
+    </section><!-- /Contact Section -->
+
+</main>
+

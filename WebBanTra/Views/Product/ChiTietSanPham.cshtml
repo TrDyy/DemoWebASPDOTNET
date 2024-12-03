@@ -1,0 +1,263 @@
+﻿@model WebBanTra.OOP.ProductDetailViewModel
+<link href="~/assets/css/cart.css" rel="stylesheet" />
+
+@{
+    ViewBag.Title = "ChiTietSanPham";
+    var max = ViewBag.limitQuantity;
+}
+@if (Session["TenDangNhap"] == null)
+{
+    Response.Redirect("/DN/DangNhap");
+}
+
+
+@if (Model.TenSP != null)
+{
+
+    <main class="main">
+        <div class="container" style="margin-top:100px;">
+            <!-- Breadcrumb -->
+
+            <div class="row">
+                <!-- Product Image -->
+                <div class="col-md-6">
+                    <div class="card border-0">
+                        <!-- Ảnh lớn -->
+                        <img id="largeImage" src="@Model.Images.FirstOrDefault()" class="card-img-top" alt="Product Image">
+
+                        <!-- Ảnh nhỏ (thumbnail) -->
+                        <div class="d-flex mt-3" style="overflow-x:scroll">
+                            @foreach (var image in Model.Images)
+                            {
+                                <img src="@image" class="me-2 img-thumbnail rounded-0" alt="Thumbnail"
+                                     style="width: 70px; height: 70px; object-fit: cover;"
+                                     onclick="changeImage(this)">
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Details -->
+                <div class="col-md-6">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb d-flex">
+                            <li class="breadcrumb-item" style="color:rgba(216, 34, 83, 255) ;"><a href="/Home/Home">Trang chủ</a></li>
+                            @if (Model != null && !string.IsNullOrEmpty(Model.DanhMuc))
+                            {
+                                <li class="breadcrumb-item" style="color:rgba(216, 34, 83, 255) ;"><a href="@Url.Action("Search", "Product", new {nameSP = Model.TenDM})">@Model.DanhMuc</a></li>
+                            }
+                            <li class="breadcrumb-item active" aria-current="page">@Model.TenSP</li>
+                        </ol>
+                    </nav>
+
+                    <h1 class="h4">@Model.TenSP</h1>
+                    <div>Sản phẩm còn: <span style="color: red;">@max</span></div>
+                    <h2 class="text-danger fw-bold" id="current-ct-@Model.MaSP">@Model.Gia</h2>
+
+                    <ul class="list-unstyled mt-4">
+                        @foreach (var description in Model.Descriptions)
+                        {
+                            <li>@description</li>
+                        }
+                    </ul>
+
+                    <div class="btn-group">
+                        <div class="input-group-text inputgroup">
+                            <button id="btnDown" onclick="decreaseCTSP()">-</button>
+                            <input type="text" name="number" value="1" min="1" id="number-PDCTSP" />
+                            <button id="btnUp" onclick="increaseCTSP()">+</button>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <a href="" onclick="getLink()" title="@Model.MaSP" id="ctsp-a" class="cta-btn align-middle" style="margin-left:20px; background-color: rgba(216, 34, 83, 255); color: white; border-radius: 50px; padding: 10px 25px; text-align: center; font-size: 20px; ">Thêm vào giỏ hàng</a>
+                    </div>
+
+                    <div class="mt-3">
+                        <button class="btn btn-outline-secondary me-2">Yêu thích</button>
+                        <button class="btn btn-outline-secondary">So sánh</button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Additional Information and Similar Products -->
+            <div class="mt-5">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="details-tab" data-bs-toggle="tab" data-bs-target="#details" type="button" role="tab" aria-controls="details" aria-selected="true">Thông tin bổ sung</button>
+                    </li>
+                </ul>
+                <div class="tab-content border p-3" id="myTabContent">
+                    <div class="tab-pane fade show active" id="details" role="tabpanel" aria-labelledby="details-tab">
+                        <table class="table">
+                            <tr>
+                                <th>Trọng lượng</th>
+                                <td>100 g</td>
+                            </tr>
+                            <tr>
+                                <th>Kích thước</th>
+                                <td>12 × 9 × 20 cm</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sản phẩm tương tự -->
+            <div class="mt-5">
+                <h3 class="mb-4">Sản phẩm tương tự</h3>
+                <div class="row row-cols-1 row-cols-md-4 g-4">
+                    @Html.Action("SanPham", "Product", new { page = 1, NoId = Model.MaSP, TenDM = Model.DanhMuc, sizePage = 3 })
+                </div>
+            </div>
+        </div>
+        <script>
+            //document.addEventListener('DOMContentLoaded', function () {
+            //    // Chọn tất cả các thẻ <h4> có id chứa chuỗi "currently-"
+            //    var gias = document.querySelectorAll('[id*="currently-ct-"]');
+
+            //    // Duyệt qua từng thẻ <h4> và cập nhật giá trị tiền tệ
+            //    gias.forEach(function (gia) {
+            //        // Lấy giá trị số từ nội dung của thẻ <h4>
+            //        var giaValue = parseFloat(gia.textContent.trim());
+
+            //        // Kiểm tra giá trị hợp lệ và cập nhật nếu cần
+            //        if (!isNaN(giaValue)) {
+            //            // Định dạng lại giá trị và gán lại vào thẻ <h4>
+            //            gia.textContent = giaValue.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
+            //        }
+            //    });
+            //});
+
+            document.addEventListener('DOMContentLoaded', function () {
+                var max = @max; // Razor sẽ thay thế giá trị này bằng giá trị thực
+                var link = document.getElementById('ctsp-a');
+
+                if (max === 0) {
+                    link.style.pointerEvents = 'none'; // Ngăn chặn sự kiện nhấp chuột
+                    link.style.opacity = '0.5'; // Tạo hiệu ứng mờ
+                    link.style.cursor = 'not-allowed'; // Thay đổi con trỏ chuột
+                    link.onclick = function (event) {
+                        event.preventDefault(); // Ngăn chặn chuyển hướng
+                    }
+                }
+                
+            });
+
+            function increaseCTSP() {
+                var quantityInput = document.getElementById('number-PDCTSP');
+                var quantity = parseInt(quantityInput.value);
+                var limit = @max;
+                if (quantity < limit) {
+                    quantityInput.value = quantity + 1;
+                }
+                else {
+                    showNotificationFail();
+                }
+            }
+
+            function decreaseCTSP() {
+                var quantityInput = document.getElementById('number-PDCTSP');
+                var quantity = parseInt(quantityInput.value);
+                if (quantity > 1) {
+                    quantityInput.value = quantity - 1;
+                }
+                else {
+                    showNotificationFail();
+                }
+
+
+            }
+
+            document.getElementById('number-PDCTSP').addEventListener('input', function () {
+                var max = @max;
+                var value = parseInt(this.value);
+                if (!isNaN(this.value) || (this.value).trim() === "") {
+                    if (value > max) {
+                        this.value = max;
+                        showNotificationFail();
+                    }
+                    else if (value <= 0) {
+                        this.value = 1;
+                        showNotificationFail();
+                    }
+                }
+                else {
+                    this.value = 1;
+                    showNotificationFail();
+                }
+            });
+
+            function changeImage(image) {
+                var largeImage = document.getElementById('largeImage');
+                largeImage.src = image.src;
+            }
+
+            function getLink() {
+                var ida = document.getElementById('ctsp-a');
+
+                var quantityInput = document.getElementById('number-PDCTSP');
+
+                // Kiểm tra xem phần tử có tồn tại không
+                if (!ida || !quantityInput) {
+                    console.error("Không tìm thấy phần tử 'ctsp-a' hoặc 'number-PDCTSP'");
+                    return;
+                }
+
+                var quantity = parseInt(quantityInput.value);
+                var id = parseInt(ida.title);
+
+                $.ajax({
+                    url: '/Cart/AddCart',
+                    type: 'POST',
+                    data: {
+                        maSP: id,
+                        soLuong: quantity
+                    },
+                    success: function (res) {
+                        if (res.success) {
+                            showNotification();
+                        } else {
+                            alert("Thêm sản phẩm không thành công!");
+                        }
+                    },
+                    error: function (err) {
+                        alert("Lỗi không thể thêm sản phẩm");
+                        console.log(err);
+                    }
+                });
+            }
+
+            function showNotification() {
+                const notification = document.getElementById('notification');
+                notification.classList.remove('hide'); // Xóa lớp ẩn nếu có
+                notification.classList.add('show'); // Thêm lớp hiển thị
+
+                // Sau 3 giây, ẩn thông báo
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    notification.classList.add('hide');
+                }, 3000);
+            }
+
+            function showNotificationFail() {
+                const notification = document.getElementById('notification-fail');
+                notification.classList.remove('hide'); // Xóa lớp ẩn nếu có
+                notification.classList.add('show'); // Thêm lớp hiển thị
+
+                // Sau 3 giây, ẩn thông báo
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    notification.classList.add('hide');
+                }, 3000);
+            }
+        </script>
+    </main>
+
+}
+else
+{
+    Response.Redirect("/Home/Home");
+}            
+

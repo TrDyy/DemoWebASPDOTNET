@@ -1,0 +1,193 @@
+﻿@model List<WebBanTra.OOP.CartDetail>
+@{ 
+     List<WebBanTra.Models.SanPham> lsp = ViewBag.listSP;
+}
+@if (Model.Count > 0)
+{
+    <table class="table">
+        <tr>
+            <th>Sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Tạm tính</th>
+            <th></th>
+        </tr>
+
+        @if (Model != null)
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <a href="@Url.Action("ChiTietSanPham", "Product", new { id = item.MaSP })">
+                            <img style="width: 100px" src="@item.LinkAnh" alt="Alternate Text" />
+                            <p>@item.TenSP</p>
+                        </a>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <div class="input-group-text inputgroup">
+                                <button id="btnDown" onclick="decrementQuantity(@item.MaSP)">-</button>
+                                <input type="text" name="number" value="@item.SoLuong" title="@lsp.Where(r => r.MaSP == item.MaSP).FirstOrDefault().SoLuongTon" id="numberPD-@item.MaSP" />
+                                <button id="btnUp" onclick="incrementQuantity(@item.MaSP)">+</button>
+                            </div>
+                        </div>
+                    </td>
+                    <td><p style="text-align:center;" id="current-tong-tien-@item.MaSP">@item.TongTien.ToString() VNĐ</p></td>
+                    <td><a onclick="showNotification()" href="@Url.Action("RemoveProduct", "Cart", new {maSP = item.MaSP})"><i class="fa-solid fa-trash" style="color: #b0b0b0;"></i></a></td>
+                </tr>
+            }
+        }
+
+    </table>
+    <div class="btn-group">
+        <a href="/Product/Product" class="cta-btn align-middle" style="background-color: rgba(216, 34, 83, 255); color: white; border-radius: 50px; padding: 10px 25px; text-align: center; font-size: 20px;">Tiếp tục mua hàng</a>
+    </div>
+
+    <script>
+        var elements = document.querySelectorAll('[id*="numberPD-"]');
+
+        // Duyệt qua các phần tử và hiển thị thông tin (nếu cần)
+        elements.forEach(function (element) {
+            element.addEventListener('input', function () {
+                var max = parseInt(element.title, 10); // Lấy giá trị max từ thuộc tính title
+                var quantity = parseInt(element.value, 10); // Lấy giá trị nhập vào
+
+                if (!isNaN(element.value) || !(element.value).trim() === "") {
+                    if (quantity > max) {
+                        element.value = max; // Giới hạn giá trị bằng max
+
+                    }
+                    else if (quantity <= 0) {
+                        element.value = 1;
+                        showNotificationFail();
+                    }
+                    else if (quantity != null) {
+                        element.value = 1;
+                        showNotificationFail();
+                    }
+                }
+                else {
+                    element.value = 1;
+                    showNotificationFail();
+                }
+            });
+        });
+
+
+        let timeoutIdCart;
+        function increasement(idInput) {
+            var quantityInput = document.getElementById(idInput);
+            var quantity = parseInt(quantityInput.value);
+            var max = parseInt(quantityInput.title);
+            if (quantity > max) {
+                quantity.value = max;
+                showNotificationFail();
+            }
+            else {
+                quantityInput.value = quantity + 1;
+                quantity += 1;
+            }
+            return quantity;
+        }
+        function decreasement(idInput) {
+            var quantityInput = document.getElementById(idInput);
+            var quantity = parseInt(quantityInput.value);
+            var max = parseInt(quantityInput.title);
+            if (quantity > 1) {
+                quantityInput.value = quantity - 1;
+                quantity = quantity - 1;
+            }
+            else {
+                quantityInput.value = quantity;
+                showNotificationFail();
+            }
+            return quantity;
+        }
+        function decrementQuantity(productId) {
+            var IdInput = ('numberPD-' + productId);
+            var quantity = parseInt(decreasement(IdInput));
+
+            if (timeoutIdCart) {
+                clearTimeout(timeoutIdCart);
+            }
+
+            timeoutIdCart = setTimeout(() => {
+                updateProduct(parseInt(productId), quantity);
+            }, 300);
+        }
+
+        function incrementQuantity(productId) {
+            var IdInput = ('numberPD-' + productId);
+            var quantity = parseInt(increasement(IdInput));
+
+            if (timeoutIdCart) {
+                clearTimeout(timeoutIdCart);
+            }
+
+            timeoutIdCart = setTimeout(() => {
+                updateProduct(parseInt(productId), quantity);
+            }, 300);
+        }
+
+        function updateProduct(id, quantity) {
+            $.ajax({
+                url: '/Cart/UpdateCart',
+                type: 'POST',
+                data: {
+                    id: id,
+                    quantity: quantity
+                },
+                success: function (res) {
+                    if (res.success) {
+                        // Cập nhật thành tiền của sản phẩm
+                        $('#current-tong-tien-' + id).html(
+                            res.data.itemPrice.toLocaleString("vi-VN", { style: "currency", currency: "VND" })
+                        );
+
+                        // Cập nhật tổng tiền giỏ hàng (giá trị đúng cần trả về từ backend)
+                        $('#current-tong-tien-gio-hang').html(
+                            res.data.totalPrice.toLocaleString("vi-VN", { style: "currency", currency: "VND" })
+                        );
+                        showNotification();
+                    } else {
+                        $('#numberPD-' + id).html(res.data.itemQuantity);
+
+                        // Cập nhật giá trị tiền tệ (tính theo định dạng VND)
+                        $('#current-tong-tien-' + id).html(res.data.itemPrice.toLocaleString("vi-VN", { style: "currency", currency: "VND" }));
+
+                        // Cập nhật tổng tiền giỏ hàng
+                        $('#current-tong-tien-gio-hang').html(res.data.totalPrice.toLocaleString("vi-VN", { style: "currency", currency: "VND" }));
+                    }
+                },
+                error: function (err) {
+                    showNotificationFail();
+                }
+            });
+        }
+
+        function showNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.remove('hide'); // Xóa lớp ẩn nếu có
+            notification.classList.add('show'); // Thêm lớp hiển thị
+
+            // Sau 3 giây, ẩn thông báo
+            setTimeout(() => {
+                notification.classList.remove('show');
+                notification.classList.add('hide');
+            }, 1000);
+        }
+
+        function showNotificationFail() {
+            const notification = document.getElementById('notification-fail');
+            notification.classList.remove('hide'); // Xóa lớp ẩn nếu có
+            notification.classList.add('show'); // Thêm lớp hiển thị
+
+            // Sau 3 giây, ẩn thông báo
+            setTimeout(() => {
+                notification.classList.remove('show');
+                notification.classList.add('hide');
+            }, 1000);
+        }
+    </script>
+
+}
